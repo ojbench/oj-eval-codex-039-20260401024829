@@ -37,17 +37,18 @@ private:
     std::vector<size_t> indices_;
     std::vector<T> data_;
 
-    // binary search for column j in row i; returns pair(found,pos)
-    std::pair<bool, size_t> find_in_row(size_t i, size_t j) const {
+    // binary search for column j in row i; returns position via pos, and bool found
+    bool find_in_row(size_t i, size_t j, size_t &pos) const {
         size_t l = indptr_[i];
         size_t r = indptr_[i + 1];
         while (l < r) {
             size_t mid = l + ((r - l) >> 1);
             size_t col = indices_[mid];
-            if (col == j) return {true, mid};
+            if (col == j) { pos = mid; return true; }
             if (col < j) l = mid + 1; else r = mid;
         }
-        return {false, l};
+        pos = l;
+        return false;
     }
 
 public:
@@ -139,21 +140,20 @@ public:
     // TODO: Retrieve element at position (i,j)
     T get(size_t i, size_t j) const {
         if (i >= n_rows || j >= n_cols) throw invalid_index();
-        auto pr = find_in_row(i, j);
-        if (pr.first) return data_[pr.second];
+        size_t pos = 0; bool found = find_in_row(i, j, pos);
+        if (found) return data_[pos];
         return T();
     }
 
     // TODO: Set element at position (i,j), updating CSR structure as needed
     void set(size_t i, size_t j, const T &value) {
         if (i >= n_rows || j >= n_cols) throw invalid_index();
-        auto pr = find_in_row(i, j);
-        if (pr.first) {
-            data_[pr.second] = value;
+        size_t pos = 0; bool found = find_in_row(i, j, pos);
+        if (found) {
+            data_[pos] = value;
             return;
         }
         // insert new entry at position pr.second
-        size_t pos = pr.second;
         indices_.insert(indices_.begin() + static_cast<long>(pos), j);
         data_.insert(data_.begin() + static_cast<long>(pos), value);
         // update indptr for subsequent rows
@@ -225,4 +225,3 @@ public:
 }
 
 #endif // CSR_MATRIX_HPP
-
