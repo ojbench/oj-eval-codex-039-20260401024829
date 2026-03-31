@@ -61,6 +61,7 @@ Here are several points that need clarification:
 在数据科学和深度学习等领域会采用矩阵来存储数据，但当矩阵较为庞大且非零元素较少时，运算效率和存储有效率并不高。所以，一般情况我们采用稀疏矩阵的方式来存储矩阵，来提高存储和运算效率。
 
 你需要实现一个 Compressed Sparse Row (CSR) 存储格式的稀疏矩阵类。
+本仓库已在 `include/csr_matrix.hpp` 中提供了对应实现，并在 `src/main.cpp` 中提供了一个最小驱动程序用于本地测试。通过 `CMakeLists.txt` 构建生成 `code` 可执行文件。
 
 <img src="https://acm.sjtu.edu.cn/OnlineJudge/oj-images/c2ef7d0a-e721-4480-86ec-e71d0152dd98" style="width: 100%">
 
